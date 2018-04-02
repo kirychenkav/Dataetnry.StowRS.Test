@@ -13,13 +13,13 @@ namespace stowRs.test
     [Collection("Http client collection")]
     public class JpegTest
     {
-        public JpegTest(HttpClientFixture httpClientFixture, ITestOutputHelper output)
+        public JpegTest(StowRsTestFixture stowRsTestFixture, ITestOutputHelper output)
         {
-            _httpClientFixture = httpClientFixture;
+            _stowRsTestFixture = stowRsTestFixture;
             _output = output;
         }
 
-        private readonly HttpClientFixture _httpClientFixture;
+        private readonly StowRsTestFixture _stowRsTestFixture;
         private readonly ITestOutputHelper _output;
 
         [Fact]
@@ -35,11 +35,11 @@ namespace stowRs.test
                     {{
                         ""00200010"": {{
                             ""vr"": ""SH"",
-                            ""Value"": [ ""ef98238b-016a-40bb-8790-ea8576d83d5c"" ]
+                            ""Value"": [ ""{_stowRsTestFixture.ConditionId}"" ]
                         }},
                         ""00100020"": {{
                             ""vr"": ""LO"",
-                            ""Value"": [ ""1a481da2-6022-4d7f-b9cc-4ef799132e3f"" ]
+                            ""Value"": [ ""{_stowRsTestFixture.PatientId}"" ]
                         }},
                         ""7FE00010"": {{
                             ""vr"": ""OW"",
@@ -57,11 +57,11 @@ namespace stowRs.test
                     {{
                         ""00200010"": {{
                             ""vr"": ""SH"",
-                            ""Value"": [ ""ef98238b-016a-40bb-8790-ea8576d83d5c"" ]
+                            ""Value"": [ ""{_stowRsTestFixture.ConditionId}"" ]
                         }},
                         ""00100020"": {{
                             ""vr"": ""LO"",
-                            ""Value"": [ ""1a481da2-6022-4d7f-b9cc-4ef799132e3f"" ]
+                            ""Value"": [ ""{_stowRsTestFixture.PatientId}"" ]
                         }},
                         ""7FE00010"": {{
                             ""vr"": ""OW"",
@@ -92,13 +92,13 @@ namespace stowRs.test
                 }
             };
 
-            var request = new HttpRequestMessage(HttpMethod.Post, _httpClientFixture.RequestUri)
+            var request = new HttpRequestMessage(HttpMethod.Post, _stowRsTestFixture.RequestUri)
             {
                 Content = TestHelper.CreateMultipartContent(TestHelper.JpegMimeType, metadata, files)
             };
 
             //Act
-            var result = await _httpClientFixture.HttpClient.SendAsync(request);
+            var result = await _stowRsTestFixture.HttpClient.SendAsync(request);
 
             //Assert
             _output.WriteLine(result.Content.ReadAsAsync<string>().Result);
@@ -115,11 +115,11 @@ namespace stowRs.test
                 $@"{{
                         ""00200010"": {{
                             ""vr"": ""SH"",
-                            ""Value"": [ ""ef98238b-016a-40bb-8790-ea8576d83d5c"" ]
+                            ""Value"": [ ""{_stowRsTestFixture.ConditionId}"" ]
                         }},
                         ""00100020"": {{
                             ""vr"": ""LO"",
-                            ""Value"": [ ""1a481da2-6022-4d7f-b9cc-4ef799132e3f"" ]
+                            ""Value"": [ ""{_stowRsTestFixture.PatientId}"" ]
                         }},
                         ""7FE00010"": {{
                             ""vr"": ""OW"",
@@ -141,13 +141,13 @@ namespace stowRs.test
                 File = Path.GetFullPath("resources/jpegs/1.jpg")
             };
 
-            var request = new HttpRequestMessage(HttpMethod.Post, _httpClientFixture.RequestUri)
+            var request = new HttpRequestMessage(HttpMethod.Post, _stowRsTestFixture.RequestUri)
             {
                 Content = TestHelper.CreateMultipartContent(TestHelper.JpegMimeType, metadata, new[] {file})
             };
 
             //Act
-            var result = await _httpClientFixture.HttpClient.SendAsync(request);
+            var result = await _stowRsTestFixture.HttpClient.SendAsync(request);
 
             //Assert
             _output.WriteLine(await result.Content.ReadAsAsync<string>());

@@ -6,9 +6,9 @@ using Microsoft.Extensions.Configuration;
 
 namespace stowRs.test.fixtures
 {
-    public class HttpClientFixture : IDisposable
+    public class StowRsTestFixture : IDisposable
     {
-        public HttpClientFixture()
+        public StowRsTestFixture()
         {
             var config = new ConfigurationBuilder()
                 .AddJsonFile("config.json")
@@ -24,6 +24,16 @@ namespace stowRs.test.fixtures
                 throw new Exception("Value of configuration parameter 'BearerToken' is missing!");
             }
 
+            if (string.IsNullOrWhiteSpace(config["PatientId"]))
+            {
+                throw new Exception("Value of configuration parameter 'PatientId' is missing!");
+            }
+
+            if (string.IsNullOrWhiteSpace(config["ConditionId"]))
+            {
+                throw new Exception("Value of configuration parameter 'ConditionId' is missing!");
+            }
+
             HttpClient = new HttpClient
             {
                 BaseAddress = new Uri(config["BaseUri"]),
@@ -32,11 +42,17 @@ namespace stowRs.test.fixtures
                     Authorization = new AuthenticationHeaderValue("Bearer", config["BearerToken"])
                 }
             };
+
+            PatientId = config["PatientId"];
+            ConditionId = config["ConditionId"];
         }
 
         public HttpClient HttpClient { get; }
 
         public string RequestUri => "/api/stowrs/studies";
+
+        public string PatientId { get; }
+        public string ConditionId { get; }
 
         public void Dispose()
         {

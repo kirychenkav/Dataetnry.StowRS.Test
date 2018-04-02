@@ -1,4 +1,6 @@
 ﻿{
     "BaseUri": "",
-    "BearerToken": ""
+    "BearerToken": "",
+    "PatientId": "",
+    "ConditionId": ""
 }

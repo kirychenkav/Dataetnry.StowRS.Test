@@ -13,13 +13,13 @@ namespace stowRs.test
     [Collection("Http client collection")]
     public class DicomTest
     {
-        public DicomTest(HttpClientFixture httpClientFixture, ITestOutputHelper output)
+        public DicomTest(StowRsTestFixture stowRsTestFixture, ITestOutputHelper output)
         {
-            _httpClientFixture = httpClientFixture;
+            _stowRsTestFixture = stowRsTestFixture;
             _output = output;
         }
 
-        private readonly HttpClientFixture _httpClientFixture;
+        private readonly StowRsTestFixture _stowRsTestFixture;
         private readonly ITestOutputHelper _output;
 
         [Fact]
@@ -35,11 +35,11 @@ namespace stowRs.test
                 {{
                     ""00200010"": {{
                         ""vr"": ""SH"",
-                        ""Value"": [ ""ef98238b-016a-40bb-8790-ea8576d83d5c"" ]
+                        ""Value"": [ ""{_stowRsTestFixture.ConditionId}"" ]
                     }},
                     ""00100020"": {{
                         ""vr"": ""LO"",
-                        ""Value"": [ ""1a481da2-6022-4d7f-b9cc-4ef799132e3f"" ]
+                        ""Value"": [ ""{_stowRsTestFixture.PatientId}"" ]
                     }},
                     ""7FE00010"": {{
                         ""vr"": ""OW"",
@@ -50,11 +50,11 @@ namespace stowRs.test
                 {{
                      ""00200010"": {{
                         ""vr"": ""SH"",
-                        ""Value"": [ ""ef98238b-016a-40bb-8790-ea8576d83d5c"" ]
+                        ""Value"": [ ""{_stowRsTestFixture.ConditionId}"" ]
                     }},
                     ""00100020"": {{
                         ""vr"": ""LO"",
-                     ""Value"": [ ""1a481da2-6022-4d7f-b9cc-4ef799132e3f"" ]
+                     ""Value"": [ ""{_stowRsTestFixture.PatientId}"" ]
                     }},
                     ""7FE00010"": {{
                         ""vr"": ""OW"",
@@ -78,13 +78,13 @@ namespace stowRs.test
                 }
             };
 
-            var request = new HttpRequestMessage(HttpMethod.Post, _httpClientFixture.RequestUri)
+            var request = new HttpRequestMessage(HttpMethod.Post, _stowRsTestFixture.RequestUri)
             {
                 Content = TestHelper.CreateMultipartContent(TestHelper.DicomMimeType, metadata, files)
             };
 
             //Act
-            var result = await _httpClientFixture.HttpClient.SendAsync(request);
+            var result = await _stowRsTestFixture.HttpClient.SendAsync(request);
 
             //Assert
             _output.WriteLine(result.Content.ReadAsAsync<string>().Result);
@@ -101,11 +101,11 @@ namespace stowRs.test
             {{
                 ""00200010"": {{
                     ""vr"": ""SH"",
-                    ""Value"": [ ""ef98238b-016a-40bb-8790-ea8576d83d5c"" ]
+                    ""Value"": [ ""{_stowRsTestFixture.ConditionId}"" ]
                 }},
                 ""00100020"": {{
                     ""vr"": ""LO"",
-                    ""Value"": [ ""1a481da2-6022-4d7f-b9cc-4ef799132e3f"" ]
+                    ""Value"": [ ""{_stowRsTestFixture.PatientId}"" ]
                 }},
                 ""7FE00010"": {{
                     ""vr"": ""OW"",
@@ -120,13 +120,13 @@ namespace stowRs.test
                 File = Path.GetFullPath("resources/dicoms/1.3.6.1.4.1.25403.207732457674374.13668.20141127075926.10.dcm")
             };
 
-            var request = new HttpRequestMessage(HttpMethod.Post, _httpClientFixture.RequestUri)
+            var request = new HttpRequestMessage(HttpMethod.Post, _stowRsTestFixture.RequestUri)
             {
                 Content = TestHelper.CreateMultipartContent(TestHelper.DicomMimeType, metadata, new[] {file})
             };
 
             //Act
-            var result = await _httpClientFixture.HttpClient.SendAsync(request);
+            var result = await _stowRsTestFixture.HttpClient.SendAsync(request);
 
             //Assert
             _output.WriteLine(await result.Content.ReadAsAsync<string>());
