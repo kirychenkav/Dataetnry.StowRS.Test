@@ -40,7 +40,10 @@ namespace stowRs.test
         {
             //Arrange
             Assert.True(ValidateParameters(baseUri, bearerToken, patientId, studyId));
-            _stowRsTestFixture.SetHttpClientParams(baseUri, bearerToken);
+            var httpClient = _stowRsTestFixture
+                .UseBaseUri(baseUri)
+                .UseBearerToken(bearerToken)
+                .Build();
 
             var dataset = new DicomDataset();
 
@@ -55,7 +58,7 @@ namespace stowRs.test
             };
 
             //Act
-            var result = await _stowRsTestFixture.HttpClient.SendAsync(request);
+            var result = await httpClient.SendAsync(request);
 
             //Assert
             _output.WriteLine(result.ReasonPhrase);
@@ -76,7 +79,10 @@ namespace stowRs.test
             //Arrange
             Assert.True(ValidateParameters(baseUri, bearerToken, patientId, studyId));
 
-            _stowRsTestFixture.SetHttpClientParams(baseUri, bearerToken);
+            var httpClient = _stowRsTestFixture
+                .UseBaseUri(baseUri)
+                .UseBearerToken(bearerToken)
+                .Build();
 
             var dataset = new DicomDataset();
 
@@ -95,7 +101,7 @@ namespace stowRs.test
             };
 
             //Act
-            var result = await _stowRsTestFixture.HttpClient.SendAsync(request);
+            var result = await httpClient.SendAsync(request);
 
             //Assert
             _output.WriteLine(result.ReasonPhrase);

@@ -7,24 +7,34 @@ namespace stowRs.test.fixtures
 {
     public class StowRsTestFixture : IDisposable
     {
+        private HttpClient httpClient;
         public StowRsTestFixture()
         {
-            HttpClient = new HttpClient();
+            httpClient = new HttpClient();
         }
 
-        public void SetHttpClientParams(string baseUri, string bearerToken)
+        public StowRsTestFixture UseBaseUri(string baseUri)
         {
-            HttpClient.BaseAddress = new Uri(baseUri);
-            HttpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", bearerToken);
+            httpClient.BaseAddress = new Uri(baseUri);
+            return this;
         }
 
-        public HttpClient HttpClient { get; }
+        public StowRsTestFixture UseBearerToken(string token)
+        {
+            httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+            return this;
+        }
+
+        public HttpClient Build()
+        {
+            return httpClient;
+        }
 
         public string RequestUri => "/api/stowrs/studies";
 
         public void Dispose()
         {
-            HttpClient?.Dispose();
+            httpClient?.Dispose();
         }
     }
 }
