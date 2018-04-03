@@ -1,22 +1,24 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
+using Dicom;
+using Dicom.IO.Buffer;
+using Dicom.Serialization;
+using Newtonsoft.Json;
 
 namespace stowRs.test
 {
     public class TestHelper
     {
-        public static string DicomMimeType = "application/dicom";
-        public static string JpegMimeType = "image/jpeg";
-
         /// <summary>
         ///     Get a valid multipart content.
         /// </summary>
         /// <param name="mimeType"></param>
         /// <returns></returns>
-        public static MultipartContent GetMultipartContent(string mimeType)
+        private static MultipartContent GetMultipartContent(string mimeType)
         {
             var multiContent = new MultipartContent("related", "DICOM DATA BOUNDARY");
 
@@ -29,7 +31,7 @@ namespace stowRs.test
         /// </summary>
         /// <param name="s"></param>
         /// <returns></returns>
-        public static Stream GenerateStreamFromString(string s)
+        private static Stream GenerateStreamFromString(string s)
         {
             var stream = new MemoryStream();
             var writer = new StreamWriter(stream);
@@ -39,12 +41,14 @@ namespace stowRs.test
             return stream;
         }
 
-        public static MultipartContent CreateMultipartContent(string mimeType, string metadata,
-            IEnumerable<FileToStore> files)
+        public static MultipartContent CreateMultipartContent(string mimeType, IEnumerable<FileToStore> files)
         {
             var multipartContent = GetMultipartContent("application/dicom+json");
 
-            var jsonContent = new StreamContent(GenerateStreamFromString(metadata));
+            var metadataString = JsonConvert.SerializeObject(files.Select(f => f.Metadata), Formatting.Indented,
+                new JsonDicomConverter());
+
+            var jsonContent = new StreamContent(GenerateStreamFromString(metadataString));
             jsonContent.Headers.ContentType = new MediaTypeHeaderValue("application/dicom+json");
             multipartContent.Add(jsonContent);
 
@@ -59,6 +63,28 @@ namespace stowRs.test
             }
 
             return multipartContent;
+        }
+
+        public static IEnumerable<FileToStore> FillDataWithBlobDataUris(DicomDataset dataset, IEnumerable<string> files)
+        {
+            var result = new List<FileToStore>();
+            foreach (var enumerateFile in files)
+            {
+                var uri = $"urn:uuid:{Guid.NewGuid()}";
+
+                var bulkDataUri = new BulkDataUriByteBuffer(uri);
+                var pixelData = new DicomOtherWord(DicomTag.PixelData, bulkDataUri);
+                dataset.AddOrUpdate(pixelData);
+
+                result.Add(new FileToStore
+                {
+                    BlobDataUri = uri,
+                    File = enumerateFile,
+                    Metadata = new DicomDataset(dataset)
+                });
+            }
+
+            return result;
         }
     }
 }
