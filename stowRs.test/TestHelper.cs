@@ -13,6 +13,13 @@ namespace stowRs.test
 {
     public class TestHelper
     {
+        private static Dictionary<string, string> _mimeDict = new Dictionary<string, string>(StringComparer.InvariantCultureIgnoreCase)
+        {
+            {".dcm", "application/dicom"},
+            {".jpg", "image/jpeg"},
+            {".jpeg", "image/jpeg"}
+        };
+
         /// <summary>
         ///     Get a valid multipart content.
         /// </summary>
@@ -41,7 +48,7 @@ namespace stowRs.test
             return stream;
         }
 
-        public static MultipartContent CreateMultipartContent(string mimeType, IEnumerable<FileToStore> files)
+        public static MultipartContent CreateMultipartContent(IEnumerable<FileToStore> files)
         {
             var multipartContent = GetMultipartContent("application/dicom+json");
 
@@ -54,10 +61,16 @@ namespace stowRs.test
 
             foreach (var file in files)
             {
-                var sContent = new StreamContent(File.OpenRead(file.File));
+                var sContent = new StreamContent(File.OpenRead(file.FilePath));
 
-                sContent.Headers.ContentType = new MediaTypeHeaderValue(mimeType);
-                sContent.Headers.ContentLocation = new Uri(file.BlobDataUri);
+                string mime;
+                mime = _mimeDict.TryGetValue(Path.GetExtension(file.FilePath), out mime)
+                    ? mime
+                    : "application/octet-stream";
+
+
+                sContent.Headers.ContentType = new MediaTypeHeaderValue(mime);
+                sContent.Headers.ContentLocation = new Uri(file.ContentLocaltionHeader);
 
                 multipartContent.Add(sContent);
             }
@@ -78,8 +91,8 @@ namespace stowRs.test
 
                 result.Add(new FileToStore
                 {
-                    BlobDataUri = uri,
-                    File = enumerateFile,
+                    ContentLocaltionHeader = uri,
+                    FilePath = enumerateFile,
                     Metadata = new DicomDataset(dataset)
                 });
             }

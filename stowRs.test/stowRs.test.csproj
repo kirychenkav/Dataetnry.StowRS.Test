@@ -27,9 +27,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Update="config.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
     <None Update="resources\dicoms\1.3.6.1.4.1.25403.207732457674374.13668.20141127075926.10.dcm">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
