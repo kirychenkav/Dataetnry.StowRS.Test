@@ -61,7 +61,11 @@ namespace stowRs.test
             var result = await httpClient.SendAsync(request);
 
             //Assert
-            _output.WriteLine(result.ReasonPhrase);
+            if (result.IsSuccessStatusCode == false)
+            {
+                _output.WriteLine(result.ReasonPhrase);
+                _output.WriteLine(await result.Content.ReadAsStringAsync());
+            }
             Assert.Equal(HttpStatusCode.OK, result.StatusCode);
         }
 
@@ -104,7 +108,11 @@ namespace stowRs.test
             var result = await httpClient.SendAsync(request);
 
             //Assert
-            _output.WriteLine(result.ReasonPhrase);
+            if (result.IsSuccessStatusCode == false)
+            {
+                _output.WriteLine(result.ReasonPhrase);
+                _output.WriteLine(await result.Content.ReadAsStringAsync());
+            }
             Assert.Equal(HttpStatusCode.OK, result.StatusCode);
         }
 
