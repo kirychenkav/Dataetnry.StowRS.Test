@@ -123,9 +123,8 @@ namespace stowRs.test
         public async Task StoreJpegsBatch(IEnumerable<BatchTestModel> testData)
         {
             //Arrange
-            const string baseUri = "http://localhost:49799/";
-            const string bearerToken =
-                "eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsIng1dCI6ImEzck1VZ01Gdjl0UGNsTGE2eUYzekFrZnF1RSIsImtpZCI6ImEzck1VZ01Gdjl0UGNsTGE2eUYzekFrZnF1RSJ9.eyJpc3MiOiJodHRwOi8vbG9jYWxob3N0OjQ5Nzk5L2lkZW50aXR5IiwiYXVkIjoiaHR0cDovL2xvY2FsaG9zdDo0OTc5OS9pZGVudGl0eS9yZXNvdXJjZXMiLCJleHAiOjE1MjQ1NjY2MzAsIm5iZiI6MTUyNDU2MzAzMCwiY2xpZW50X2lkIjoibmloLW5pYWlkLWNsaSIsInNjb3BlIjpbIm9mZmxpbmVfYWNjZXNzIiwicmVhZDpwYXRpZW50Iiwid3JpdGU6cGF0aWVudCIsImRlbGV0ZTpwYXRpZW50IiwicmVhZDpjb25kaXRpb24iLCJ3cml0ZTpjb25kaXRpb24iLCJkZWxldGU6Y29uZGl0aW9uIiwiYXBwcm92ZTpjb25kaXRpb24iXSwic3ViIjoidmFsZXJ5LmtpcnljaGVua2EuYnkiLCJhdXRoX3RpbWUiOjE1MjM3MTg2OTQsImlkcCI6Imlkc3J2IiwiYW1yIjpbIjJmYSJdfQ.WEzBEZt_uKm2Y9Ym1T-Et81J3-YvCmHAK1XyO-pemcMUY4cNpj4fST74pyYGi0YMXzk0WjrGM294I_Mp7Zxf2EBS8-r2YmBx_HjYgCmC68oUqw5Xu7LKg8TYmxeg19Jr_E2tjZl17FMxaThbAlfehVI8rTnwBBPSn7iyPAsLGHUfDeF-au0Ts0PfxFW-C9UH91cI_jJ5i1w0MeXpkSZwMbNQfXDU-XkeUdIfpjzHVheN5gsXcw6cO_2GlSzdP8hqOU_2oTMcEFAFOkGH0YLIfJhCUXS6NelBSpvzc8zrAzj8mO65ZS_xRozXibo9v34Hdv_kRcxDR1b6Y_pkudwS8A";
+            const string baseUri = "{INSERT BASE URI HERE}";
+            const string bearerToken = "{INSERT BEARER TOKEN HERE}";
 
             var httpClient = _stowRsTestFixture
                 .UseBaseUri(baseUri)
