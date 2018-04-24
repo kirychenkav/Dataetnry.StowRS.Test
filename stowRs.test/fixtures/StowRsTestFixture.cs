@@ -13,12 +13,9 @@ namespace stowRs.test.fixtures
     public class StowRsTestFixture : IDisposable
     {
         private static HttpClient httpClient;
-        //private Mock<HttpClient> _mockApiHttpClient;
 
         public StowRsTestFixture()
         {
-            //_mockApiHttpClient = new Mock<HttpClient>();
-            //_mockApiHttpClient.Setup(x => x);
             httpClient = new HttpClient(new CustomHandler());
         }
 
@@ -51,9 +48,9 @@ namespace stowRs.test.fixtures
             protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request,
                 CancellationToken cancellationToken)
             {
-                switch (request.RequestUri.AbsolutePath)
+                switch (request.RequestUri.Query)
                 {
-                    case "/api/condition/search/patient/PUNA9910163/registrationdate/2015-07-20":
+                    case "?patient=PUNA9910163&registrationdate=2015-07-20":
                         return await Task.FromResult(CreateResponse(new List<ConditionRecord>
                         {
                             new ConditionRecord
@@ -62,7 +59,7 @@ namespace stowRs.test.fixtures
                                 Id = "b982953f-0958-4bc2-97f1-5c2f94e890b3"
                             }
                         }));
-                    case "/api/condition/search/patient/PUNA9910158/registrationdate/2015-07-11":
+                    case "?patient=PUNA9910158&registrationdate=2015-07-11":
                         return await Task.FromResult(CreateResponse(new List<ConditionRecord>
                         {
                             new ConditionRecord
@@ -71,7 +68,7 @@ namespace stowRs.test.fixtures
                                 Id = "4b6f5632-46a2-4eb5-ad1d-00da0faa721b"
                             }
                         }));
-                    case "/api/condition/search/patient/PUNA9910158/registrationdate/2018-04-24":
+                    case "?patient=PUNA9910158&registrationdate=2018-04-24":
                         return await Task.FromResult(CreateResponse(new List<ConditionRecord>
                         {
                             new ConditionRecord

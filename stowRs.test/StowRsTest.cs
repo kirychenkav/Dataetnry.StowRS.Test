@@ -145,8 +145,11 @@ namespace stowRs.test
                 var metadata = JsonConvert.DeserializeObject<dynamic>(File.ReadAllText(metadataFile));
                 foreach (var metadataCase in metadata.Cases)
                 {
+                    //This request is mocked via https://github.com/kirychenkav/Dataetnry.StowRS.Test/blob/master/stowRs.test/fixtures/StowRsTestFixture.cs#L49
+                    //Implementation of searchin cases via patient's Local Identifier and Case Registration date
+                    //will be done at the next release of the Dataentry API
                     var caseResponse = await httpClient.GetAsync(
-                        $"api/condition/search/patient/{metadata.Identifier}/registrationdate/{metadataCase.RegistrationDate}");
+                        $"api/condition/search?patient={metadata.Identifier}&registrationdate={metadataCase.RegistrationDate}");
 
                     var condition = (await caseResponse.Content.ReadAsAsync<IEnumerable<ConditionRecord>>()).FirstOrDefault();
 
