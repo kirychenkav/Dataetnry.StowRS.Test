@@ -27,6 +27,24 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Update="resources\batch\c2d49f1a-7888-455c-a88b-58e318a02ce9\1.jpg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="resources\batch\c2d49f1a-7888-455c-a88b-58e318a02ce9\2.jpg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="resources\batch\c2d49f1a-7888-455c-a88b-58e318a02ce9\metadata.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="resources\batch\TestPatient\1.jpg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="resources\batch\TestPatient\2.jpg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="resources\batch\TestPatient\metadata.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="resources\dicoms\1.3.6.1.4.1.25403.207732457674374.13668.20141127075926.10.dcm">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

@@ -1,0 +1,16 @@
+﻿{
+    "Identifier": "PUNA9910163",
+    "Cases": [
+        {
+            "RegistrationDate": "2015-07-20",
+            "ImagingStudies": [
+                {
+                    "StudyDate": "20180101",
+                    "Modality": "CR",
+                    "Files": [ "1.jpg", "2.jpg" ]
+                }
+            ]
+        }
+    ]
+
+}

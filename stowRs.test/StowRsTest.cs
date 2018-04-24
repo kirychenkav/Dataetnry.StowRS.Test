@@ -5,6 +5,8 @@ using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Dicom;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using stowRs.test.fixtures;
 using Xunit;
 using Xunit.Abstractions;
@@ -119,49 +121,94 @@ namespace stowRs.test
         }
 
         [Theory]
-        [MemberData(nameof(BatchTestData))]
-        public async Task StoreJpegsBatch(IEnumerable<BatchTestModel> testData)
+        [InlineData(
+            EmptyBaseUriTemplate,
+            EmptyBearerTokenTemplate,
+            "resources/batch",
+            BatchType.RequestPerPatient)]
+        [InlineData(EmptyBaseUriTemplate,
+            EmptyBearerTokenTemplate,
+            "resources/batch",
+            BatchType.RequestAllData)]
+        public async Task StoreJpegsBatch(string baseUri, string bearerToken, string dir, BatchType type)
         {
             //Arrange
-            const string baseUri = "{INSERT BASE URI HERE}";
-            const string bearerToken = "{INSERT BEARER TOKEN HERE}";
-
             var httpClient = _stowRsTestFixture
                 .UseBaseUri(baseUri)
                 .UseBearerToken(bearerToken)
                 .Build();
 
-
             var dataToStore = new List<FileToStore>();
-            foreach (var batchTestModel in testData)
+
+            foreach (var metadataFile in Directory.EnumerateFiles(dir, "metadata.json", SearchOption.AllDirectories))
             {
-                var dataset = new DicomDataset();
-                dataset.AddOrUpdate(DicomTag.PatientID, batchTestModel.PatientId);
-                dataset.AddOrUpdate(DicomTag.StudyID, batchTestModel.CaseId);
+                var metadata = JsonConvert.DeserializeObject<dynamic>(File.ReadAllText(metadataFile));
+                foreach (var metadataCase in metadata.Cases)
+                {
+                    var caseResponse = await httpClient.GetAsync(
+                        $"api/condition/search/patient/{metadata.Identifier}/registrationdate/{metadataCase.RegistrationDate}");
 
-                dataset.AddOrUpdate(DicomTag.Modality, "CR");
-                dataset.AddOrUpdate(DicomTag.StudyDate, "20180101");
+                    var condition = (await caseResponse.Content.ReadAsAsync<IEnumerable<ConditionRecord>>()).FirstOrDefault();
 
-                dataToStore.AddRange(TestHelper.FillDataWithBlobDataUris(dataset,
-                    new[] {batchTestModel.File}.Select(Path.GetFullPath)));
+                    foreach (var imagingstudy in metadataCase.ImagingStudies)
+                    {
+                        var dataset = new DicomDataset();
+                        dataset.AddOrUpdate(DicomTag.PatientID, condition.Patient.Id);
+                        dataset.AddOrUpdate(DicomTag.StudyID, condition.Id);
+
+                        dataset.AddOrUpdate(DicomTag.Modality, imagingstudy.Modality.ToString());
+                        dataset.AddOrUpdate(DicomTag.StudyDate, imagingstudy.StudyDate.ToString());
+
+                        var fileDirectory = Path.GetFullPath(Path.GetDirectoryName(metadataFile));
+
+                        dataToStore.AddRange(TestHelper.FillDataWithBlobDataUris(dataset,
+                            ((JArray)imagingstudy.Files).ToObject<string[]>().Select(f => Path.Combine(fileDirectory, f))));
+                    }
+                }
+
+                if (type == BatchType.RequestPerPatient)
+                {
+                    var request = new HttpRequestMessage(HttpMethod.Post, _stowRsTestFixture.RequestUri)
+                    {
+                        Content = TestHelper.CreateMultipartContent(dataToStore)
+                    };
+
+                    //Act
+                    var result = await httpClient.SendAsync(request);
+
+                    //Assert
+                    if (result.IsSuccessStatusCode == false)
+                    {
+                        _output.WriteLine(result.ReasonPhrase);
+                        _output.WriteLine(await result.Content.ReadAsStringAsync());
+                    }
+
+                    Assert.Equal(HttpStatusCode.OK, result.StatusCode);
+
+                    dataToStore = new List<FileToStore>();
+                }
             }
 
-            var request = new HttpRequestMessage(HttpMethod.Post, _stowRsTestFixture.RequestUri)
+            if (type == BatchType.RequestAllData)
             {
-                Content = TestHelper.CreateMultipartContent(dataToStore)
-            };
+                var request = new HttpRequestMessage(HttpMethod.Post, _stowRsTestFixture.RequestUri)
+                {
+                    Content = TestHelper.CreateMultipartContent(dataToStore)
+                };
 
-            //Act
-            var result = await httpClient.SendAsync(request);
+                //Act
+                var result = await httpClient.SendAsync(request);
 
-            //Assert
-            if (result.IsSuccessStatusCode == false)
-            {
-                _output.WriteLine(result.ReasonPhrase);
-                _output.WriteLine(await result.Content.ReadAsStringAsync());
+                //Assert
+                if (result.IsSuccessStatusCode == false)
+                {
+                    _output.WriteLine(result.ReasonPhrase);
+                    _output.WriteLine(await result.Content.ReadAsStringAsync());
+                }
+
+                Assert.Equal(HttpStatusCode.OK, result.StatusCode);
             }
 
-            Assert.Equal(HttpStatusCode.OK, result.StatusCode);
         }
 
 
