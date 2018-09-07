@@ -16,11 +16,6 @@ namespace stowRs.test
     [Collection("Http client collection")]
     public class StowRsTest
     {
-        private const string EmptyBaseUriTemplate = "{INSERT BASE URI HERE}";
-        private const string EmptyBearerTokenTemplate = "{INSERT BEARER TOKEN HERE}";
-        private const string EmptyPatientIdTemplate = "{INSERT PATIENT ID HERE}";
-        private const string EmptyCaseIdTemplate = "{INSERT CASE ID HERE}";
-
         private readonly ITestOutputHelper _output;
         private readonly StowRsTestFixture _stowRsTestFixture;
 
@@ -31,10 +26,10 @@ namespace stowRs.test
         }
 
         [Theory]
-        [InlineData(EmptyBaseUriTemplate,
-            EmptyBearerTokenTemplate,
-            EmptyPatientIdTemplate,
-            EmptyCaseIdTemplate,
+        [InlineData(Constants.EmptyBaseUriTemplate,
+            Constants.EmptyBearerTokenTemplate,
+            Constants.EmptyPatientIdTemplate,
+            Constants.EmptyCaseIdTemplate,
             "resources/dicoms/1.3.6.1.4.1.25403.207732457674374.13668.20141127075926.10.dcm",
             "resources/dicoms/1.3.6.1.4.1.25403.207732457674374.13668.20141127075926.11.dcm")]
         public async Task StoreDicoms(string baseUri, string bearerToken, string patientId, string studyId,
@@ -73,10 +68,10 @@ namespace stowRs.test
         }
 
         [Theory]
-        [InlineData(EmptyBaseUriTemplate,
-            EmptyBearerTokenTemplate,
-            EmptyPatientIdTemplate,
-            EmptyCaseIdTemplate,
+        [InlineData(Constants.EmptyBaseUriTemplate,
+            Constants.EmptyBearerTokenTemplate,
+            Constants.EmptyPatientIdTemplate,
+            Constants.EmptyCaseIdTemplate,
             "CR",
             "20180101",
             "resources/jpegs/1.jpg")]
@@ -122,12 +117,12 @@ namespace stowRs.test
 
         [Theory]
         [InlineData(
-            EmptyBaseUriTemplate,
-            EmptyBearerTokenTemplate,
+            Constants.EmptyBaseUriTemplate,
+            Constants.EmptyBearerTokenTemplate,
             "resources/batch",
             BatchType.RequestPerPatient)]
-        [InlineData(EmptyBaseUriTemplate,
-            EmptyBearerTokenTemplate,
+        [InlineData(Constants.EmptyBaseUriTemplate,
+            Constants.EmptyBearerTokenTemplate,
             "resources/batch",
             BatchType.RequestAllData)]
         public async Task StoreJpegsBatch(string baseUri, string bearerToken, string dir, BatchType type)
@@ -215,27 +210,27 @@ namespace stowRs.test
         private bool ValidateParameters(string baseUri, string bearerToken, string patientId, string studyId)
         {
             var result = true;
-            if (baseUri == EmptyBaseUriTemplate)
+            if (baseUri == Constants.EmptyBaseUriTemplate)
             {
                 _output.WriteLine(
                     "You must specify the valid base uri for STAGING or PRODUCTION. See https://github.com/ibrsp/dataentry-api-postman-collection#getting-started-by-cloning-repository");
                 result = false;
             }
 
-            if (bearerToken == EmptyBearerTokenTemplate)
+            if (bearerToken == Constants.EmptyBearerTokenTemplate)
             {
                 _output.WriteLine(
                     "You must specify the valid bearer token. To find out how to get it, see https://github.com/ibrsp/dataentry-api-postman-collection#getting-the-authorization-token-via-postman");
                 result = false;
             }
 
-            if (patientId == EmptyPatientIdTemplate)
+            if (patientId == Constants.EmptyPatientIdTemplate)
             {
                 _output.WriteLine("You must specify the valid PATIENT ID from dataentry portal");
                 result = false;
             }
 
-            if (studyId == EmptyCaseIdTemplate)
+            if (studyId == Constants.EmptyCaseIdTemplate)
             {
                 _output.WriteLine("You must specify the valid CASE ID from dataentry portal");
                 result = false;
